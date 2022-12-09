@@ -25,19 +25,31 @@ def detectAnDisplay(frame):
     
     cv.imshow('Captura - Face Detection' , frame)
 
+def detectAndDisplayHand(frame):
+    frame_gray = cv.cvtColor(frame , cv.COLOR_BGR2GRAY)
+    frame_gray = cv.equalizeHist(frame_gray)
+    hands = hands_cascade.detectMultiScale(frame_gray)
+    for(x,y,w,h) in hands:
+        center = (x+w//2 , y+h//2)
+        frame = cv.ellipse(frame , center , (w//2 , h//2) , 0 , 0 , 360 , (255,0,255), 4)
+    cv.imshow('Captura - Hand Detection' , frame)
+
 
 parser = argparse.ArgumentParser(description='Code for cascade classifier tutorial')
 parser.add_argument('--face_cascade' , help='Path to face cascade' , default='haarcascade_frontalface_alt.xml')
 parser.add_argument('--eyes_cascade' , help='Path to eyes cascade' , default='haarcascade_eye_tree_eyeglasses.xml')
+parser.add_argument('--hands_cascade' , help='Path to hand cascade' , default='haarcascade_hand.xml')
 parser.add_argument('--camera' , help='Camera divide number' , type=int , default=0)
 
 args = parser.parse_args()
 
 face_cascade_name = args.face_cascade
 eyes_cascade_name = args.eyes_cascade
+hands_cascade_name = args.hands_cascade
 
 face_cascade = cv.CascadeClassifier()
 eyes_cascade = cv.CascadeClassifier()
+hands_cascade = cv.CascadeClassifier()
 
 #  1 cargar las cascadas
 
@@ -62,7 +74,7 @@ while True:
         print("--(!)No captured frame --Break!")
         break
 
-    detectAnDisplay(frame)
-
+    # detectAnDisplay(frame)
+    detectAndDisplayHand(frame)
     if cv.waitKey(10) == ord("s"):
         break
